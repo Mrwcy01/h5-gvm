@@ -176,7 +176,7 @@
                 <van-col span="3">
                   <van-button
                     type="info"
-                    @click="getServiceMoreList()">搜索</van-button>
+                    @click="getServiceMoreList(true)">搜索</van-button>
                 </van-col>
               </van-row>
 
@@ -193,14 +193,15 @@
                   v-for="item in serviceList"
                   :key="item.id"
                   class="MaintenanceRecord">
-                  <p>维保类型：{{ item.MaintenanceType }}</p>
+                  <p>维保类型：{{ item.MaintenanceType | type }}</p>
                   <p class="clearfix atime">
-                    <span class="left">时间：{{ item.CreateTime }}</span>
+                    <span class="left">时间：{{ item.CreateTime.split('T')[0] }}</span>
                     <van-icon
                       class="right"
                       name="edit"
                       size="28"
-                      color="#1989fa" />
+                      color="#1989fa"
+                      @click="editService(item.Id)" />
                   </p>
                   <p>记录内容：{{ item.RecordInfo }}</p>
 
@@ -276,7 +277,8 @@
                 </van-col>
                 <van-col span="3">
                   <van-button
-                    type="info">搜索</van-button>
+                    type="info"
+                    @click="getConversionList(true)">搜索</van-button>
                 </van-col>
               </van-row>
             </div>
@@ -292,14 +294,15 @@
                   v-for="item in ConversionList"
                   :key="item.Id"
                   class="MaintenanceRecord">
-                  <p>转场日期：{{ item.TransferTime }}</p>
+                  <p>转场日期：{{ item.TransferTime.split('T')[0] }}</p>
                   <p class="clearfix atime">
                     <span class="left">转入场地：{{ item.Prosition }}</span>
                     <van-icon
                       class="right"
                       name="edit"
                       size="28"
-                      color="#1989fa" />
+                      color="#1989fa"
+                      @click="getConversionDetails(item.Id)" />
                   </p>
                   <p>详细地址：{{ item.DetailedAddress }}</p>
                 </div>
@@ -650,6 +653,15 @@ export default {
       'userAccount'
     ])
   },
+  filters: {
+    type: function(value) {
+      if (value == 1) return '施工'
+      else if (value == 2) return '保养'
+      else if (value == 3) return '加油'
+      else if (value == 4) return '维修'
+      else if (value == 5) return '保险'
+    }
+  },
   created() {
     this.caveatForm.Account = this.userAccount
     this.caveatForm.TerminalId = this.$route.query.TerminalId
@@ -752,6 +764,15 @@ export default {
     /**
      * 维保记录
      */
+    editService(tid) {
+      this.$router.push({
+        path: '/editMaintenance',
+        query: {
+          id: tid,
+          TerminalId: this.$route.query.TerminalId
+        }
+      })
+    },
     // 选择开始时间
     serviceStartSelectDate(date) {
       this.hoursStartDate = ''
@@ -797,6 +818,14 @@ export default {
     /**
      * 转场记录
      */
+    getConversionDetails(falg) {
+      this.$router.push({
+        path: '/editConversion',
+        query: {
+          id: falg
+        }
+      })
+    },
     onAddConversion() {
       this.$router.push({
         path: '/addConversion',

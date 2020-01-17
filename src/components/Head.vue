@@ -11,7 +11,9 @@
           :color="iconColor" />
       </div>
       <div class="title left">{{ title }}</div>
-      <div class="operating right">{{ operating }}</div>
+      <div
+        class="operating right"
+        @click="getPush()">{{ operating }}</div>
     </div>
   </div>
 </template>
@@ -39,6 +41,10 @@ export default {
     iconColor: {
       type: String,
       default: '#FFF'
+    },
+    path: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -52,6 +58,11 @@ export default {
   methods: {
     goBack() {
       this.$router.back(-1)
+    },
+    getPush() {
+      this.$router.push({
+        path: this.path
+      })
     }
   }
 }

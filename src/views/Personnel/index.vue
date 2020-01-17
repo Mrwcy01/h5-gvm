@@ -4,7 +4,8 @@
       icon-color="''"
       :color="false"
       title="人员管理"
-      operating="添加" />
+      operating="添加"
+      path="/addPersonnel" />
     <div class="search">
       <van-search
         v-model="value"
@@ -17,41 +18,63 @@
         <div slot="action">
           <van-icon
             name="search"
-            size="22" /></div>
+            size="22"
+            @click="getList(true)" /></div>
         <!-- @click="" -->
       </van-search>
     </div>
     <div class="perList">
-      <div class="person clearfix">
-        <div class="icon left clearfix">
-          <van-icon
-            class="left"
-            name="contact"
-            size="18" />
-          <span class="left">李四</span>
-        </div>
-        <div class="card left clearfix">
-          <van-icon
-            class="left"
-            name="debit-pay"
-            size="18" />
-          <span class="left">321316546163645</span>
-        </div>
-        <div class="operating right">
-          <van-icon
-            name="passed"
-            size="18" />
+      <van-list
+        v-model="cardLoading"
+        :finished="cardFinished"
+        finished-text="已加载全部"
+        @load="getList">
+        <div
+          v-for="item in personnelList"
+          :key="item.Id"
+          class="person clearfix">
+          <div class="icon left clearfix">
+            <van-icon
+              class="left"
+              name="contact"
+              size="18" />
+            <span class="left">{{ item.Name }}</span>
+          </div>
+          <div class="card left clearfix">
+            <van-icon
+              class="left"
+              name="debit-pay"
+              size="18" />
+            <span class="left">{{ item.YtNumber }}</span>
+          </div>
+          <div class="operating right">
+            <van-icon
+              v-if="item.State == 0"
+              name="passed"
+              size="18"
+              @click="getDisable(item.Id)" />
+            <van-icon
+              v-else
+              name="close"
+              size="18"
+              @click="getEnable(item.Id)" />
           &nbsp;
-          <van-icon
-            name="edit"
-            size="18" />
+            <van-icon
+              name="edit"
+              size="18"
+              @click="onEditDetils(item.Id)" />
+          </div>
         </div>
-      </div>
+      </van-list>
+
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
+import { GetDriverList, EnableDriver, DisableDriver } from '@/api/personnel.js'
 import Head from '../../components/Head'
 export default {
   name: 'Personnel',
@@ -60,14 +83,75 @@ export default {
   },
   data() {
     return {
-      value: ''
+      cardLoading: false,
+      cardFinished: false,
+      personnelList: [],
+      value: '',
+      form: {
+        IdTree: '',
+        State: -1, // 状态（-1=全部,0=在职，1=离职）
+        Size: 10,
+        Index: 0,
+        DriverName: ''
+      }
     }
   },
+  computed: {
+    ...mapState('login', [
+      'idTree', 'userAccount'
+    ])
+  },
   created() {
-
+    this.form.IdTree = this.idTree
   },
   methods: {
+    getList(type) {
+      if (type) {
+        this.personnelList = []
+      }
+      this.cardLoading = true
+      GetDriverList(this.form)
 
+        .then(res => {
+          if (res.Msg.Code == 1) {
+            this.form.Index === 1 ? this.personnelList = res.Data : this.personnelList = this.personnelList.concat(res.Data)
+            // 判读是否加载到最后一页
+            res.Data.length < 10 ? this.cardFinished = true : this.form.Index++
+            // 请求完毕后隐藏正在 加载样式
+            this.cardLoading = false
+          } else {
+            this.cardLoading = false
+          }
+        })
+    },
+    // 启用
+    getEnable(id) {
+      EnableDriver({ DriverId: id, Account: this.userAccount })
+        .then(res => {
+          if (res.Msg.Code == 1) {
+            this.getList(true)
+            this.$toast.success('启用成功')
+          }
+        })
+    },
+    // 禁用
+    getDisable(id) {
+      DisableDriver({ DriverId: id, Account: this.userAccount })
+        .then(res => {
+          if (res.Msg.Code == 1) {
+            this.getList(true)
+            this.$toast.success('禁用成功')
+          }
+        })
+    },
+    onEditDetils(tid) {
+      this.$router.push({
+        path: '/addPersonnel',
+        query: {
+          id: tid
+        }
+      })
+    }
   }
 }
 </script>

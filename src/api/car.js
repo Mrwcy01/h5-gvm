@@ -84,6 +84,26 @@ export const AddMaintenanceRecord = (params) => request({
   params
 })
 
+// 获取维保记录详情
+export const GetMaintenanceItem = (params) => request({
+  url: '/api/Maintenance/GetMaintenanceItem/' + params,
+  method: 'POST'
+})
+
+// 编辑维保记录
+export const EditMaintenanceRecord = (params) => request({
+  url: '/api/Maintenance/EditMaintenanceRecord',
+  method: 'POST',
+  params
+})
+
+// 删除维保记录
+export const DeleteMaintenanceRecord = (params) => request({
+  url: '/api/Maintenance/DeleteMaintenanceRecord/' + params,
+  method: 'POST',
+  params
+})
+
 // 转场记录
 export const GetTransferRecordList = (params) => request({
   url: '/api/Maintenance/GetTransferRecordList',
@@ -97,3 +117,25 @@ export const AddTransferRecord = (params) => request({
   method: 'POST',
   params
 })
+
+// 编辑转场记录
+export const EditTransferRecord = (params) => request({
+  url: '/api/Maintenance/EditTransferRecord/' + params.id,
+  method: 'POST',
+  params
+})
+
+// 转场记录详情
+export const GetTransferRecordItem = (params) => request({
+  url: '/api/Maintenance/GetTransferRecordItem/' + params,
+  method: 'POST'
+})
+
+// 删除转场记录
+export const DeleteTransferRecord = (params) => request({
+  url: '/api/Maintenance/DeleteTransferRecord/' + params,
+  method: 'POST',
+  params
+})
+
+// 获取车队车辆列表

@@ -1,6 +1,6 @@
 <template>
-  <div class="MaintenanceRecord Attendance">
-    <Head title="维保记录" />
+  <div class="editMaintenance Attendance">
+    <Head title="编辑维保记录" />
     <div class="condition">
       <van-row>
         <van-col span="24">
@@ -115,11 +115,17 @@
             placeholder="请输入油量" />
         </van-col>
       </van-row>
-      <div class="add">
+      <div class="add clearfix">
         <van-button
+          class="left"
           type="info"
           size="large"
-          @click="onAddRecord">添加</van-button>
+          @click="onEditRecord">确定</van-button>
+        <van-button
+          class="right"
+          type="info"
+          size="large"
+          @click="onDelete">作废</van-button>
       </div>
     </div>
   </div>
@@ -128,18 +134,19 @@
 <script>
 import { mapState } from 'vuex'
 
-import { AddMaintenanceRecord } from '@/api/car.js'
+import { GetMaintenanceItem, EditMaintenanceRecord, DeleteMaintenanceRecord } from '@/api/car.js'
 import Head from '@/components/Head'
 
 export default {
-  name: 'MaintenanceRecord',
+  name: 'EditMaintenance',
   components: {
     Head
   },
   data() {
     return {
       form: {
-        terminalId: this.$route.query.TerminalId, // 设备号
+        id: '',
+        terminalId: '', // 设备号
         type: null, // 维保类型1：施工，2保养，3加油，4维修，5保险
         startTime: null, // 开始时间
         endTime: null, // 结束时间
@@ -167,9 +174,54 @@ export default {
   },
   created() {
     this.form.accont = this.userAccount
+    this.getDetails()
   },
   methods: {
-    onAddRecord() {
+    onDelete() {
+      this.$dialog.confirm({
+        message: '确认删除吗?'
+      }).then(() => {
+        DeleteMaintenanceRecord({ id: this.$route.query.id, accont: this.userAccount })
+          .then(res => {
+            if (res.status == 1) {
+              this.$toast.success('删除成功')
+            } else {
+              this.$toast.fail(res.message)
+            }
+          })
+      }).catch(() => {
+        // on cancel
+      })
+    },
+    getDetails() {
+      GetMaintenanceItem(this.$route.query.id)
+        .then(res => {
+          if (res.status == 1) {
+            this.form.id = res.data[0].Id
+            this.form.terminalId = res.data[0].TerminalID
+            this.form.type = res.data[0].MaintenanceType
+            this.form.startTime = res.data[0].MaintenanceStartTime.split('T')[0]
+            this.form.endTime = res.data[0].MaintenanceEndTime.split('T')[0]
+            this.form.oilQuantity = res.data[0].OilQuantity
+            this.form.recordInfo = res.data[0].RecordInfo
+            this.form.accont = res.data[0].Accont
+            this.hours = res.data[0].CreateTime.split('T')[0]
+            this.type = res.data[0].MaintenanceType
+            if (this.type == 1) {
+              this.type = '施工'
+            } else if (this.type == 2) {
+              this.type = '保养'
+            } else if (this.type == 3) {
+              this.type = '加油'
+            } else if (this.type == 4) {
+              this.type = '维修'
+            } else {
+              this.type = '保险'
+            }
+          }
+        })
+    },
+    onEditRecord() {
       if (!this.type) {
         this.$toast.fail('请选择类型')
         return false
@@ -182,10 +234,10 @@ export default {
         this.$toast.fail('请填写描述')
         return false
       }
-      AddMaintenanceRecord(this.form)
+      EditMaintenanceRecord(this.form)
         .then(res => {
           if (res.status == 1) {
-            this.$toast.success('添加成功')
+            this.$toast.success('编辑成功')
           } else {
             this.$toast.fail(res.message)
           }
@@ -228,13 +280,27 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-.MaintenanceRecord{
+<style lang='scss'>
+.editMaintenance{
   .condition{
     padding: 10px 20px;
   }
   .add{
     margin-top: 20px;
+    .van-button--large{
+      width: 48%;
+    }
   }
 }
+.van-dialog{
+  height: 15%;
+  .van-dialog__content{
+    height:45%;
+    .van-dialog__message{
+      margin-top: 8%;
+      font-size: 26px;
+    }
+  }
+}
+
 </style>

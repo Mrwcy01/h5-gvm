@@ -35,8 +35,13 @@ import carList from '../views/carList/index'
 import parameter from '../views/carList/parameter'
 // 维保记录
 import MaintenanceRecord from '../views/carList/MaintenanceRecord'
+// 编辑维保记录
+import editMaintenance from '../views/carList/editMaintenance'
+
 // 添加转场记录
 import addConversion from '../views/carList/addConversion'
+// 编辑转场记录
+import editConversion from '../views/carList/editConversion'
 
 // 我的
 import mine from '../views/mine/index'
@@ -171,6 +176,16 @@ const router = new Router({
       path: '/addConversion',
       name: '添加转场记录',
       component: addConversion
+    },
+    {
+      path: '/editMaintenance',
+      name: '编辑维保记录',
+      component: editMaintenance
+    },
+    {
+      path: '/editConversion',
+      name: '编辑转场记录',
+      component: editConversion
     }
   ]
 })
