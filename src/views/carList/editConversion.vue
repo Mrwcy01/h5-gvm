@@ -87,11 +87,11 @@ export default {
   },
   computed: {
     ...mapState('login', [
-      'userAccount'
+      'userName'
     ])
   },
   created() {
-    this.editform.accont = this.userAccount
+    this.editform.accont = this.userName
     this.getDetails()
   },
   methods: {
@@ -99,7 +99,7 @@ export default {
       this.$dialog.confirm({
         message: '确认删除吗?'
       }).then(() => {
-        DeleteTransferRecord({ id: this.$route.query.id, accont: this.userAccount })
+        DeleteTransferRecord({ id: this.$route.query.id, accont: this.userName })
           .then(res => {
             if (res.status == 1) {
               this.$toast.success('删除成功')

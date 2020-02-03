@@ -8,6 +8,13 @@
 import 'echarts-liquidfill/src/liquidFill.js'
 export default {
   name: 'FuelHeat',
+  props: {
+    num: {
+      type: Number,
+      default: 0
+    }
+
+  },
   data() {
     return {
       echarts: null,
@@ -18,7 +25,11 @@ export default {
 
   },
   mounted() {
-    var value = 0.48
+    this.$nextTick(() => {
+      //  执行echarts方法
+      this.initEcharts()
+    })
+    var value = this.num
     var data = [value, value, value, value, value]
     this.echarts = require('echarts')
     this.myChart = this.echarts.init(document.getElementById('FuelHeat'))
@@ -83,6 +94,6 @@ export default {
 <style lang='scss' scoped>
 #FuelHeat{
   width: 50%;
-  height: 300px;
+  height: 280px;
 }
 </style>

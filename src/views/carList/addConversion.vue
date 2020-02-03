@@ -80,11 +80,11 @@ export default {
   },
   computed: {
     ...mapState('login', [
-      'userAccount'
+      'userName'
     ])
   },
   created() {
-    this.addform.accont = this.userAccount
+    this.addform.accont = this.userName
   },
   methods: {
     onAddConversion() {

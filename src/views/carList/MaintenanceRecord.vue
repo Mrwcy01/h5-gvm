@@ -145,7 +145,7 @@ export default {
         endTime: null, // 结束时间
         oilQuantity: 0, // 油量
         recordInfo: null, // 记录信息
-        accont: this.userAccount // 操作ren
+        accont: this.userName // 操作ren
       },
       startDate: false,
       endDate: false,
@@ -162,11 +162,11 @@ export default {
   },
   computed: {
     ...mapState('login', [
-      'userAccount'
+      'userName'
     ])
   },
   created() {
-    this.form.accont = this.userAccount
+    this.form.accont = this.userName
   },
   methods: {
     onAddRecord() {

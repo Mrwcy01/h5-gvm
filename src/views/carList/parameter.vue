@@ -6,22 +6,36 @@
         v-model="active"
         swipeable>
         <van-tab :title="'车辆参数'">
-          <div class="car clearfix">
-            <div class="Fuel left">
-              <Fuel />
+          <div>
+            <div class="car clearfix">
+              <!-- <div class="Fuel left"> -->
+              <Fuel
+                class="left" />
+              <!-- :num="CarParameter.FuelLevel"  -->
+              <!-- </div> -->
+              <!-- <div class="FuelHeat left"> -->
+              <FuelHeat
+                class="left" />
+              <!-- :num="CarParameter.OilTemperature" -->
+              <!-- </div> -->
+              <!-- <div class="WaterHeat left"> -->
+              <WaterHeat
+                class="left"
+                :num="CarParameter.WaterTemperature" />
+              <!-- </div> -->
+              <!-- <div class="engine left"> -->
+              <Engine
+                class="left"
+                :num="CarParameter.RotationSpeed" />
+              <!-- </div> -->
             </div>
-            <div class="FuelHeat left">
-              <FuelHeat />
+            <div class="Voltage">
+              <Voltage :num="CarParameter.OilPressure" />
             </div>
-            <div class="WaterHeat left">
-              <WaterHeat />
+            <div class="parameterTime clearfix">
+              <p class="left">当日工时</p>
+              <p class="right">{{ CarParameter.DayWorkSec }}</p>
             </div>
-            <div class="engine left">
-              <Engine />
-            </div>
-          </div>
-          <div class="Voltage">
-            <Voltage />
           </div>
         </van-tab>
         <van-tab :title="'工时月报'">
@@ -439,19 +453,19 @@
           <div class="table">
             <ul class="clearfix">
               <li>报警项目 </li>
-              <li>报警项目 </li>
+              <li>状态 </li>
               <li>开盒</li>
-              <li>报警项目 </li>
+              <li>{{ caveatList.OpenBoxAlarm ? '不正常':'正常' }}</li>
               <li>结束断开</li>
-              <li>报警项目 </li>
+              <li>{{ caveatList.WireHarnessDisconnection ? '不正常':'正常' }} </li>
               <li>GPS天线</li>
-              <li>报警项目 </li>
+              <li>{{ caveatList.GPSAntennaDisconnected ? '不正常':'正常' }} </li>
               <li>电瓶电压</li>
-              <li>报警项目 </li>
+              <li>{{ caveatList.BatteryVoltage ? '不正常':'正常' }} </li>
               <li>电瓶断开</li>
-              <li>报警项目 </li>
+              <li>{{ caveatList.BatteryDisconnection ? '不正常':'正常' }} </li>
               <li>后备电池</li>
-              <li>报警项目 </li>
+              <li>{{ caveatList.BackupBattery ? '不正常':'正常' }} </li>
             </ul>
             <div class="phone">
               <van-field
@@ -506,7 +520,6 @@
               <li>{{ GPSList.ServiceStart }} </li>
               <li>服务结束时间</li>
               <li>{{ GPSList.ServiceEnd }} </li>
-
             </ul>
           </div>
         </van-tab>
@@ -522,11 +535,108 @@
           </p>
         </van-tab>
         <van-tab :title="'轨迹回放'">
-          轨迹回放
+          <div class="Replay picker">
+            <van-row>
+              <van-col span="9">&nbsp;&nbsp;轨迹回放
+                &nbsp;
+                <van-icon
+                  v-if="showplay"
+                  name="play-circle-o"
+                  size="18"
+                  color="#1989fa"
+                  @click="play()" />
+                <van-icon
+                  v-else
+                  name="pause-circle-o"
+                  size="18"
+                  color="#1989fa"
+                  @click="pause()" />
+                &nbsp;&nbsp;
+                <van-icon
+                  name="stop-circle-o"
+                  size="18"
+                  color="#FF0000"
+                  @click="reset()" />
+              </van-col>
+              <van-col span="6">
+                <div class="timeSelect left">
+                  <van-field
+                    readonly
+                    clickable
+                    label=""
+                    label-width="0px"
+                    :value="ReplayStartDateDisplay"
+                    placeholder="请选择开始时间"
+                    @click="ReplayStart = true" />
+                </div>
+                <van-popup
+                  v-model="ReplayStart"
+                  position="bottom"
+                  :style="{ height: '20%' }">
+                  <van-datetime-picker
+                    v-model="ReplayStartDate"
+                    type="date"
+                    @confirm="ReplayStartSelectDate"
+                    @cancel="ReplayStart = false" />
+                </van-popup>
+              </van-col>
+              <van-col span="6">
+                <div class="timeSelect left">
+                  <van-field
+                    readonly
+                    clickable
+                    label=""
+                    label-width="0px"
+                    :value="ReplayEndDateDisplay"
+                    placeholder="请选择结束时间"
+                    @click="ReplayEnd = true" />
+                </div>
+                <van-popup
+                  v-model="ReplayEnd"
+                  position="bottom"
+                  :style="{ height: '20%' }">
+                  <van-datetime-picker
+                    v-model="ReplayEndDate"
+                    type="date"
+                    @confirm="ReplayEndSelectDate"
+                    @cancel="ReplayEnd = false" />
+                </van-popup>
+              </van-col>
+              <van-col span="3">
+                <van-button
+                  type="info"
+                  @click="getTrackMap">搜索</van-button>
+              </van-col>
+            </van-row>
+          </div>
         </van-tab>
         <van-tab :title="'电子围栏'" />
       </van-tabs>
     </div>
+    <!-- 车辆参数 -->
+    <!-- <div v-show="active == 0">
+      <div class="car clearfix">
+        <div class="Fuel left">
+          <Fuel :num="CarParameter.FuelLevel" />
+        </div>
+        <div class="FuelHeat left">
+          <FuelHeat :num="CarParameter.OilTemperature" />
+        </div>
+        <div class="WaterHeat left">
+          <WaterHeat :num="CarParameter.WaterTemperature" />
+        </div>
+        <div class="engine left">
+          <Engine :num="CarParameter.RotationSpeed" />
+        </div>
+      </div>
+      <div class="Voltage">
+        <Voltage :num="CarParameter.OilPressure" />
+      </div>
+      <div class="parameterTime clearfix">
+        <p class="left">当日工时</p>
+        <p class="right">{{ CarParameter.DayWorkSec }}</p>
+      </div>
+    </div> -->
     <!-- 位置信息 -->
     <div
       v-show="active === 7"
@@ -535,10 +645,25 @@
     <div
       v-show="active === 9"
       id="FenceMap" />
+    <!-- 轨迹回放 -->
+    <div
+      v-show="active === 8"
+      id="ReplayMap">
+      <div id="container" />
+    </div>
   </div>
 </template>
 
 <script>
+// 获取所有点的坐标
+var points = []
+var map // 百度地图对象
+var car // 汽车图标
+var label // 信息标签
+var centerPoint
+var timer // 定时器
+var index = 0 // 记录播放到第几个point
+import logo from '@/assets/logo.png'
 import { GetWorkHmr,
   GetGcmCarAlarmInfo,
   SetGcmAlarm,
@@ -547,7 +672,9 @@ import { GetWorkHmr,
   GetGcmEFInfo,
   GetFuelConsumptionRecord,
   GetMaintenanceList,
-  GetTransferRecordList } from '@/api/car.js'
+  GetTransferRecordList,
+  GetGcmCarParameter,
+  GetGcmCarTrajectory } from '@/api/car.js'
 import { mapState } from 'vuex'
 import Fuel from './components/Fuel'
 import FuelHeat from './components/FuelHeat'
@@ -562,6 +689,8 @@ export default {
   },
   data() {
     return {
+      showplay: true,
+      logo,
       // 工时统计
       hoursAddStart: false,
       hoursAddEnd: false,
@@ -639,18 +768,26 @@ export default {
       Fence: [{}], // 电子围栏
       showPicker: false,
       checked: true,
-      active: 3,
+      active: 0,
       echarts: null,
       date: false,
       visitCurrentDate: '',
       minDate: '',
       maxDate: '',
-      hours: {}
+      hours: {},
+      CarParameter: {},
+      // 轨迹回放
+      ReplayStartDateDisplay: '',
+      ReplayStart: false,
+      ReplayStartDate: '',
+      ReplayEndDateDisplay: '',
+      ReplayEnd: false,
+      ReplayEndDate: ''
     }
   },
   computed: {
     ...mapState('login', [
-      'userAccount'
+      'userName'
     ])
   },
   filters: {
@@ -663,19 +800,32 @@ export default {
     }
   },
   created() {
-    this.caveatForm.Account = this.userAccount
+    window.This = this
+    this.caveatForm.Account = this.userName
     this.caveatForm.TerminalId = this.$route.query.TerminalId
     this.getNowFormatDate()
     this.getHours()
     this.getCaveat()
     this.getGpsList()
+    this.gerCarParameter()
   },
   mounted() {
     this.getPosition()
     this.getFence()
     this.getFenceMap()
+    // this.init()
+    this.initMap()
   },
   methods: {
+    // 车辆参数
+    gerCarParameter() {
+      GetGcmCarParameter({ TerminalId: this.$route.query.TerminalId })
+        .then(res => {
+          if (res.Msg.Code == 1) {
+            this.CarParameter = res.Data
+          }
+        })
+    },
     /**
      * 油耗记录
      */
@@ -926,6 +1076,27 @@ export default {
           }
         })
     },
+    /**
+     * 轨迹回放
+     */
+    // 选择开始时间
+    ReplayStartSelectDate(date) {
+      this.ReplayStartDate = ''
+      var month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+      var currentDate = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+      this.ReplayStartDateDisplay = date.getFullYear() + '-' + month + '-' + currentDate
+      this.ReplayStartDate = date
+      this.ReplayStart = false
+    },
+    // 选择结束时间
+    ReplayEndSelectDate(date) {
+      this.ReplayEndDate = ''
+      var month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+      var currentDate = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+      this.ReplayEndDateDisplay = date.getFullYear() + '-' + month + '-' + currentDate
+      this.ReplayEndDate = date
+      this.ReplayEnd = false
+    },
     // 电子围栏
     getFence() {
       GetGcmEFInfo({ TerminalId: this.$route.query.TerminalId })
@@ -1015,6 +1186,95 @@ export default {
         new BMap.Point(pStart.lng, pEnd.lat)
       ], { strokeColor: 'blue', strokeWeight: 2, strokeOpacity: 0.5 }) // 创建多边形
       map.addOverlay(polygon) // 增加多边形
+    },
+    initMap() {
+      var map = new BMap.Map('container')
+      var point = new BMap.Point(116.404, 39.915)
+      map.centerAndZoom(point, 15)
+    },
+    init() {
+      // followChk = document.getElementById('follow')
+      // playBtn = document.getElementById('play')
+      // pauseBtn = document.getElementById('pause')
+      // resetBtn = document.getElementById('reset')
+
+      // 初始化地图,选取第一个点为起始点
+      map = new BMap.Map('container')
+      map.centerAndZoom(points[0], 15)
+      map.enableScrollWheelZoom()
+      map.addControl(new BMap.NavigationControl())
+      map.addControl(new BMap.ScaleControl())
+      map.addControl(new BMap.OverviewMapControl({ isOpen: true }))
+
+      // 通过DrivingRoute获取一条路线的point
+      var driving = new BMap.DrivingRoute(map)
+      driving.search(points[0], points[points.length - 1])
+      driving.setSearchCompleteCallback(function() {
+        // 得到路线上的所有point
+        points = driving.getResults().getPlan(0).getRoute(0).getPath()
+        // 画面移动到起点和终点的中间
+        centerPoint = new BMap.Point((points[0].lng + points[points.length - 1].lng) / 2, (points[0].lat + points[points.length - 1].lat) / 2)
+        map.panTo(centerPoint)
+        // 连接所有点
+        map.addOverlay(new BMap.Polyline(points, { strokeColor: 'black', strokeWeight: 5, strokeOpacity: 1 }))
+        // 显示小车子
+        label = new BMap.Label('', { offset: new BMap.Size(-20, -20) })
+        car = new BMap.Marker(points[0])
+        car.setLabel(label)
+        map.addOverlay(car)
+      })
+    },
+    play() {
+      this.showplay = false
+      var point = points[index]
+      if (index > 0) {
+        map.addOverlay(new BMap.Polyline([points[index - 1], point], { strokeColor: 'red', strokeWeight: 1, strokeOpacity: 1 }))
+      }
+      // label.setContent('经度: ' + point.lng + '<br>纬度: ' + point.lat)
+      car.setPosition(point)
+      index++
+      // if (followChk.checked) {
+      //   map.panTo(point)
+      // }
+      if (index < points.length) {
+        timer = window.setTimeout('window.This.play(' + index + ')', 200)
+        // console.log(timer, index, 'play(' + index + ')')
+      } else {
+        map.panTo(point)
+      }
+    },
+    pause() {
+      this.showplay = true
+      if (timer) {
+        window.clearTimeout(timer)
+      }
+    },
+    reset() {
+      this.showplay = true
+      if (timer) {
+        window.clearTimeout(timer)
+      }
+      index = 0
+      car.setPosition(points[0])
+      map.panTo(centerPoint)
+    },
+    getTrackMap() {
+      GetGcmCarTrajectory({ TerminalId: this.$route.query.TerminalId,
+        StartDate: this.ReplayStartDateDisplay,
+        EndDate: this.ReplayEndDateDisplay
+      })
+        .then(res => {
+          if (res.Msg.Code === 1) {
+            var date = res.Data
+            date.forEach(item => {
+              points.push(new BMap.Point(item.Longitude, item.Latitude))
+            })
+            console.log('points')
+
+            console.log(points)
+            this.init()
+          }
+        })
     }
   }
 }
@@ -1028,6 +1288,12 @@ export default {
   margin-top: 50%;
 }
 .parameter{
+  .parameterTime{
+    padding: 10px 50px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+
+  }
   .tab{
     .wave-echart{
       width: 120px;
@@ -1198,6 +1464,14 @@ export default {
   #FenceMap{
     width: 100%;
     height:86vh;
+  }
+  #ReplayMap{
+    width: 100%;
+    height:86vh;
+    #container{
+      width: 100%;
+      height: 100%;
+    }
   }
   .van-notice-bar{
     .van-icon-location-o{

@@ -8,6 +8,13 @@
 <script>
 export default {
   name: 'Voltage',
+  props: {
+    num: {
+      type: Number,
+      default: 0
+    }
+
+  },
   data() {
     return {
       echarts: null,
@@ -38,7 +45,7 @@ export default {
           max: 500,
           splitNumber: 10,
           detail: { formatter: '中性点电压', fontSize: 14 },
-          data: [{ value: 50, name: '50%' }],
+          data: [{ value: this.num, name: this.num + '%' }],
           axisLine: { // 坐标轴线
             lineStyle: { // 属性lineStyle控制线条样式
               width: 18,
@@ -64,6 +71,6 @@ export default {
 <style lang='scss' scoped>
 #Voltage{
   width: 100%;
-  height: 600px;
+  height: 550px;
 }
 </style>

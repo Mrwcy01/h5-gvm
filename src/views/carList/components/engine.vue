@@ -8,6 +8,13 @@
 import 'echarts-liquidfill/src/liquidFill.js'
 export default {
   name: 'Engine',
+  props: {
+    num: {
+      type: Number,
+      default: 0
+    }
+
+  },
   data() {
     return {
       echarts: null,
@@ -18,7 +25,7 @@ export default {
 
   },
   mounted() {
-    var value = 0.48
+    var value = this.num
     var data = [value, value, value, value, value]
     this.echarts = require('echarts')
     this.myChart = this.echarts.init(document.getElementById('engine'))
@@ -83,6 +90,6 @@ export default {
 <style lang='scss' scoped>
 #engine{
   width: 50%;
-  height: 300px;
+  height: 280px;
 }
 </style>

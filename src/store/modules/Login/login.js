@@ -4,7 +4,7 @@ const state = {
   id: '',
   name: '',
   idTree: '',
-  userAccount: ''
+  userName: ''
 }
 // MANA_GE_MENT
 const mutations = {
@@ -18,7 +18,7 @@ const mutations = {
     state.idTree = data
   },
   SET_LOGIN_USER_ACCOUNT: (state, data) => {
-    state.userAccount = data
+    state.userName = data
   }
 }
 const actions = {

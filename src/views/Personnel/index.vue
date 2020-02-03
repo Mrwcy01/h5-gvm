@@ -98,7 +98,7 @@ export default {
   },
   computed: {
     ...mapState('login', [
-      'idTree', 'userAccount'
+      'idTree', 'userName'
     ])
   },
   created() {
@@ -126,7 +126,7 @@ export default {
     },
     // 启用
     getEnable(id) {
-      EnableDriver({ DriverId: id, Account: this.userAccount })
+      EnableDriver({ DriverId: id, Account: this.userName })
         .then(res => {
           if (res.Msg.Code == 1) {
             this.getList(true)
@@ -136,7 +136,7 @@ export default {
     },
     // 禁用
     getDisable(id) {
-      DisableDriver({ DriverId: id, Account: this.userAccount })
+      DisableDriver({ DriverId: id, Account: this.userName })
         .then(res => {
           if (res.Msg.Code == 1) {
             this.getList(true)

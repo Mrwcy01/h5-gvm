@@ -28,9 +28,16 @@ export const MergeDriver = (params) => request({
   params
 })
 
+// 获取人员详情
+export const GetDriverItem = (params) => request({
+  url: '/api/Driver/GetDriverItem/' + params.Id,
+  method: 'GET',
+  params
+})
+
 // 获取角色列表
 export const GetRoles = (params) => request({
   url: '/api/Roles/GetRoles',
-  method: 'POST',
+  method: 'GET',
   params
 })

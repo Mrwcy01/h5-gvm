@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+// demo
+import demo from '../views/carList/components/map'
 
 // 登录
 import Login from '../views/Login/index'
@@ -186,6 +188,11 @@ const router = new Router({
       path: '/editConversion',
       name: '编辑转场记录',
       component: editConversion
+    },
+    {
+      path: '/demo',
+      name: '编辑转场记录',
+      component: demo
     }
   ]
 })

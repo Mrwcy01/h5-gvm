@@ -40,14 +40,15 @@
           </div>
           <div class="Disable right">
             <van-icon
-              v-if="item.State !== 0"
+              v-if="item.State !== 1"
               name="passed"
-              size="18" />
+              size="18"
+              @click="getDisable(item.SerialNumber)" />
             <van-icon
               v-else
               name="close"
               size="18"
-              @click="getEnable(item.Id)" />
+              @click="getEnable(item.SerialNumber)" />
           </div>
         </div>
       </van-list>
@@ -57,7 +58,7 @@
 </template>
 
 <script>
-import { GetCards } from '@/api/card.js'
+import { GetCards, GetEnableCard, GetDisableCard } from '@/api/card.js'
 import { mapState } from 'vuex'
 
 import Head from '../../components/Head'
@@ -83,7 +84,7 @@ export default {
   },
   computed: {
     ...mapState('login', [
-      'idTree'
+      'idTree', 'userName'
     ])
   },
   created() {
@@ -107,8 +108,27 @@ export default {
             this.cardLoading = false
           }
         })
+    },
+    // 停用
+    getDisable(SerialNumber) {
+      GetDisableCard({ Account: this.userName, SerialNumber: SerialNumber })
+        .then(res => {
+          if (res.Msg.Code == 1) {
+            this.getCardList(true)
+            this.$toast.success('停用成功')
+          }
+        })
+    },
+    // 启用
+    getEnable(SerialNumber) {
+      GetEnableCard({ Account: this.userName, SerialNumber: SerialNumber })
+        .then(res => {
+          if (res.Msg.Code == 1) {
+            this.getCardList(true)
+            this.$toast.success('启用成功')
+          }
+        })
     }
-
   }
 }
 </script>
